@@ -16,7 +16,7 @@ export default {
   input: "src/index.js",
   output: [
 		{ file: pkg.module, 'format': 'es' },
-		{ file: pkg.main, 'format': 'umd', name }
+		{ file: pkg.main, 'format': 'umd', name, globals: 'hypns' }
   ],
   // rollup pulls the es module destined for nodejs, not the one for the browser
   // so these alias need to be included here, even though they are in the upstream module :(
@@ -24,7 +24,7 @@ export default {
     json(),
     resolve(
       { 
-        browser: true, // instructs the plugin to use the "browser" property in package.json files to specify alternative files to load for bundling
+        // browser: true, // instructs the plugin to use the "browser" property in package.json files to specify alternative files to load for bundling
         preferBuiltins: false
       }
     ),    
