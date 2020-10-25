@@ -1,14 +1,6 @@
 <script>
-  // Import rollup verison (es module)
-  // TODO: configure Rollup so that these work too
-  // import * as HyPNS from "HyPNS/dist/index.browser.js"; // Rollup UMD for browser; require is not defined
-  // import * as HyPNS from "HyPNS/browser/index.mjs"; // No native build (node-gyp-build)
-  // import * as HyPNS from "HyPNS"; // No native build (node-gyp-build)
-  
-  // Import browserify version (umd module)
-  import HyPNS from "../hypns-bundle.js" 
-  // import { hypns } from "../../HyPNS/browser/hypns-bundle" // WTF? 'hypns' is not exported by HyPNS
-  
+  import HyPNS from "hypns" // uses the browser field in package.json
+    
   import { onMount, onDestroy } from "svelte";
 
   // passed down from Parent component
