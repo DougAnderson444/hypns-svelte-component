@@ -12,7 +12,6 @@
 
   onMount(() => {
     hypnsNode = new HyPNS(opts);
-    console.log('hypnsNode is: ', hypnsNode)
 
     // Close the HyPNS connection if the browser is closed
     window.addEventListener("unload", async (event) => {
