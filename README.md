@@ -1,6 +1,10 @@
 # HyPNS Svelte Component
 
-## An open/close wrapper
+## An open/close wrapper for HyPNS
+
+```js
+npm i hypns-svelte-component
+```
 
 [HyPNS](https://github.com/DougAnderson444/HyPNS) uses [@corestore/networker](https://www.npmjs.com/package/@corestore/networker) which has networking that needs to opened and closed intelligently.
 
