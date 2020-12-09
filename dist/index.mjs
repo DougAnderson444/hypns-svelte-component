@@ -26187,30 +26187,36 @@ utils.intFromLE = intFromLE;
 arguments[4][35][0].apply(exports,arguments);
 },{"buffer":53,"dup":35}],182:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@^6.5.3",
+  "_args": [
+    [
+      "elliptic@6.5.3",
+      "C:\\Users\\douga\\Documents2\\code\\HyPNS"
+    ]
+  ],
+  "_development": true,
+  "_from": "elliptic@6.5.3",
   "_id": "elliptic@6.5.3",
   "_inBundle": false,
   "_integrity": "sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==",
   "_location": "/elliptic",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "elliptic@^6.5.3",
+    "raw": "elliptic@6.5.3",
     "name": "elliptic",
     "escapedName": "elliptic",
-    "rawSpec": "^6.5.3",
+    "rawSpec": "6.5.3",
     "saveSpec": null,
-    "fetchSpec": "^6.5.3"
+    "fetchSpec": "6.5.3"
   },
   "_requiredBy": [
     "/browserify-sign",
     "/create-ecdh"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.3.tgz",
-  "_shasum": "cb59eb2efdaf73a0bd78ccd7015a62ad6e0f93d6",
-  "_spec": "elliptic@^6.5.3",
-  "_where": "C:\\Users\\Doug\\Documents\\Business\\coding\\HyPNS\\node_modules\\browserify-sign",
+  "_spec": "6.5.3",
+  "_where": "C:\\Users\\douga\\Documents2\\code\\HyPNS",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -26218,7 +26224,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
@@ -26228,7 +26233,6 @@ module.exports={
     "minimalistic-assert": "^1.0.0",
     "minimalistic-crypto-utils": "^1.0.0"
   },
-  "deprecated": false,
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -68247,8 +68251,7 @@ class HyPNS {
     this._storage = opts.persist === false ? RAM : getNewStorage(applicationName);
     this.store = new Corestore(this._storage, opts.corestoreOpts);
     this.sodium = sodium;
-    this.swarmNetworker;
-    this.network; // handle shutdown gracefully
+    this.hcrypto = hcrypto; // handle shutdown gracefully
 
     var closeHandler = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator(function* () {
@@ -68299,18 +68302,15 @@ class HyPNSInstance extends EventEmitter {
       opts.keypair = hcrypto.keyPair();
     }
 
-    this._keypair = opts.keypair;
-    this.key = this._keypair.publicKey; // this.publicKey = this._keypair.publicKey.toString('hex')
+    this._keypair = opts.keypair; // can be hex or buffer
 
-    this.store = opts.store;
-    this.network = opts.network; // this.beacon = new EventEmitter()
-    // eslint-disable-next-line no-unused-expressions
-
-    this.multi;
-    this.core;
+    this.key = this._keypair.publicKey;
+    this.store = opts.temp ? RAM : opts.store;
+    this.network = opts.network;
     this.latest = null;
     this.writable = false;
     this.publish;
+    this.setMaxListeners(0);
   }
 
   ready() {
