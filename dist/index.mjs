@@ -68251,7 +68251,8 @@ class HyPNS {
     this._storage = opts.persist === false ? RAM : getNewStorage(applicationName);
     this.store = new Corestore(this._storage, opts.corestoreOpts);
     this.sodium = sodium;
-    this.hcrypto = hcrypto; // handle shutdown gracefully
+    this.hcrypto = hcrypto;
+    this.instances = new Map(); // handle shutdown gracefully
 
     var closeHandler = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator(function* () {
@@ -68267,7 +68268,8 @@ class HyPNS {
 
     process.on('SIGINT', closeHandler);
     process.on('SIGTERM', closeHandler);
-  }
+  } // open a new instance on this hypns node
+
 
   open(opts) {
     var _this2 = this;
@@ -68275,8 +68277,15 @@ class HyPNS {
     return _asyncToGenerator(function* () {
       yield _this2.store.ready();
       if (!_this2.swarmNetworker) _this2.swarmNetworker = new SwarmNetworker(_this2.store);
-      if (!_this2.network) _this2.network = new MultifeedNetworker(_this2.swarmNetworker);
-      return new HyPNSInstance(_objectSpread(_objectSpread({}, opts), _this2)); // TODO: Keep track of these to close them all? Does it matter?
+      if (!_this2.network) _this2.network = new MultifeedNetworker(_this2.swarmNetworker); // return if exists already on this node
+
+      if (opts && opts.keypair && opts.keypair.publicKey && _this2.instances.has(opts.keypair.publicKey)) return _this2.instances.get(opts.keypair.publicKey); // if doesnt exist, return a new instance 
+
+      var instance = new HyPNSInstance(_objectSpread(_objectSpread({}, opts), _this2));
+
+      _this2.instances.set(instance.publicKey, instance);
+
+      return _this2.instances.get(instance.publicKey);
     })();
   }
 
@@ -68284,7 +68293,7 @@ class HyPNS {
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      // TODO: Close all instances too
+      // TODO: Close all instances too?
       _this3.store.close();
 
       if (_this3.swarmNetworker) yield _this3.swarmNetworker.close(); // Shut down the swarm networker.
@@ -68309,8 +68318,7 @@ class HyPNSInstance extends EventEmitter {
     this.network = opts.network;
     this.latest = null;
     this.writable = false;
-    this.publish;
-    this.setMaxListeners(0);
+    this.publish; // this.setMaxListeners(0)
   }
 
   ready() {
@@ -68418,11 +68426,11 @@ class HyPNSInstance extends EventEmitter {
 
                     feed.ready(() => {
                       _this4.writable = true;
-                      resolve(feed);
+                      resolve(_this4);
                     });
                   });
                 } else {
-                  resolve(_this4.core);
+                  resolve(_this4);
                 }
               });
 
