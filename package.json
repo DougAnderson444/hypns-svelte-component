@@ -12,7 +12,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "hypns": "^1.6.0"
+    "hypns": "^1.6.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
