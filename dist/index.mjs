@@ -68838,6 +68838,10 @@ var sodium = require('sodium-universal');
 var EventEmitter = require('events');
 
 var DEFAULT_APPLICATION_NAME = 'hypnsapplication';
+var DEFAULT_SWARM_OPTS = {
+  extensions: [],
+  preferredPort: 42666
+};
 var isBrowser = process.title === 'browser'; // workaround until RAA / random-access-web is fixed
 
 function getNewStorage(name) {
@@ -68858,7 +68862,8 @@ class HyPNS {
     this.store = new Corestore(this._storage, opts.corestoreOpts);
     this.sodium = sodium;
     this.hcrypto = hcrypto;
-    this.instances = new Map(); // handle shutdown gracefully
+    this.instances = new Map();
+    this.swarmOpts = opts.swarmOpts; // handle shutdown gracefully
 
     var closeHandler = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator(function* () {
@@ -68892,9 +68897,9 @@ class HyPNS {
           secretKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
         };
         sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.secretKey, noiseSeed);
-        _this2.swarmNetworker = new SwarmNetworker(_this2.store, {
+        _this2.swarmNetworker = new SwarmNetworker(_this2.store, Object.assign({
           keyPair
-        });
+        }, DEFAULT_SWARM_OPTS, _this2.swarmOpts));
       }
 
       if (!_this2.network) _this2.network = new MultifeedNetworker(_this2.swarmNetworker); // return if exists already on this node

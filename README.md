@@ -15,7 +15,7 @@ await HyPNS.close() // remembering things sucks, there's a better way! Let's use
 
 Instead of pushing this obligation out into userland, this handy little Svelte component wraps HyPNS with listeners that activate if:
 
- - The window is close using [`"unload"`](https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event)
+ - The window is [terminated](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#state-terminated) using [`"pagehide"`](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#the-unload-event), or
  - The svelte component is destroyed, using [`"onDestroy"`](https://svelte.dev/docs#onDestroy) 
 
 ## Notes
