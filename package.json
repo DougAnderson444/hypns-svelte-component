@@ -1,6 +1,6 @@
 {
   "name": "hypns-svelte-component",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "files": [
