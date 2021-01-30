@@ -68869,7 +68869,10 @@
         this.sodium = sodium;
         this.hcrypto = hcrypto;
         this.instances = new Map();
-        this.swarmOpts = opts.swarmOpts; // handle shutdown gracefully
+        this.swarmOpts = opts.swarmOpts;
+        this.opts = {
+          staticNoiseKey: opts.staticNoiseKey || false
+        }; // handle shutdown gracefully
 
         var closeHandler = /*#__PURE__*/function () {
           var _ref = _asyncToGenerator(function* () {
@@ -68896,16 +68899,19 @@
 
           if (!_this2.swarmNetworker) {
             // Set up noiseKey to persist peer identity, just like in mauve's hyper-sdk
-            var noiseSeed = _this2.store.inner._deriveSecret(_this2.applicationName, 'replication-keypair');
+            var swarmOpts = _this2.swarmOpts || {};
 
-            var keyPair = {
-              publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
-              secretKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
-            };
-            sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.secretKey, noiseSeed);
-            _this2.swarmNetworker = new SwarmNetworker(_this2.store, Object.assign({
-              keyPair
-            }, DEFAULT_SWARM_OPTS, _this2.swarmOpts));
+            if (_this2.opts.staticNoiseKey) {
+              var noiseSeed = _this2.getDeviceSeed();
+
+              var keyPair = _this2.getDeviceMasterKeypair(noiseSeed);
+
+              Object.assign(swarmOpts, {
+                keyPair
+              }, DEFAULT_SWARM_OPTS);
+            }
+
+            _this2.swarmNetworker = new SwarmNetworker(_this2.store, swarmOpts);
           }
 
           if (!_this2.network) _this2.network = new MultifeedNetworker(_this2.swarmNetworker); // return if exists already on this node
@@ -68934,6 +68940,47 @@
         })();
       }
 
+      getDeviceSeed() {
+        var _arguments = arguments,
+            _this4 = this;
+
+        return _asyncToGenerator(function* () {
+          var nameSpace = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'device-seed';
+          yield _this4.store.ready();
+
+          var noiseSeed = _this4.store.inner._deriveSecret(_this4.applicationName, nameSpace);
+
+          return noiseSeed;
+        })();
+      }
+
+      getKeypair(seed) {
+        var _this5 = this;
+
+        return _asyncToGenerator(function* () {
+          seed = seed || (yield _this5.getDeviceSeed());
+          var keyPair = {
+            publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
+            privateKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
+          };
+          sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.privateKey, seed);
+          return keyPair;
+        })();
+      }
+
+      deriveKeypair(context, subkeyNumber, origSeed) {
+        var _this6 = this;
+
+        return _asyncToGenerator(function* () {
+          origSeed = origSeed || (yield _this6.getDeviceSeed());
+          var newSeed = Buffer.alloc(sodium.crypto_kx_SEEDBYTES);
+          var ctx = Buffer.alloc(sodium.crypto_kdf_CONTEXTBYTES);
+          ctx.write(context);
+          sodium.crypto_kdf_derive_from_key(newSeed, subkeyNumber, ctx, origSeed);
+          return _this6.getKeypair(newSeed);
+        })();
+      }
+
     }
 
     class HyPNSInstance extends EventEmitter {
@@ -68952,32 +68999,32 @@
         this.network = opts.network;
         this.latest = null;
         this.writable = false;
-        this.publish; // this.setMaxListeners(0)
+        this.publish = null; // this.setMaxListeners(0)
       }
 
       ready() {
-        var _this4 = this;
+        var _this7 = this;
 
         return _asyncToGenerator(function* () {
           return new Promise((resolve, reject) => {
-            var self = _this4;
-            _this4.multi = new Multifeed(_this4.store, {
-              rootKey: _this4._keypair.publicKey,
+            var self = _this7;
+            _this7.multi = new Multifeed(_this7.store, {
+              rootKey: _this7._keypair.publicKey,
               valueEncoding: 'json'
             });
 
-            _this4.network.swarm(_this4.multi);
+            _this7.network.swarm(_this7.multi);
 
-            _this4.multi.ready( /*#__PURE__*/function () {
+            _this7.multi.ready( /*#__PURE__*/function () {
               var _ref2 = _asyncToGenerator(function* (err) {
                 if (err) throw Error('Multifeed not ready');
-                _this4.core = kappa(_this4.store, {
-                  multifeed: _this4.multi
+                _this7.core = kappa(_this7.store, {
+                  multifeed: _this7.multi
                 }); // store not used since we pass in a multifeed
 
                 var timestampView = list(memdb(), (msg, next) => {
                   // only index those msg with valid signature
-                  var valid = msg.value && msg.value.text && msg.value.timestamp && typeof msg.value.timestamp === 'string' && _this4.verify(msg.value.text + ' ' + msg.value.timestamp, msg.value.signature);
+                  var valid = msg.value && msg.value.text && msg.value.timestamp && typeof msg.value.timestamp === 'string' && _this7.verify(msg.value.text + ' ' + msg.value.timestamp, msg.value.signature);
 
                   if (valid) {
                     // sort on the 'timestamp' field
@@ -68992,39 +69039,39 @@
                  * by the kappa view
                  */
 
-                if (_this4.core.feeds().length > 0) {
+                if (_this7.core.feeds().length > 0) {
                   yield new Promise((resolve, reject) => {
                     // TODO: multiple pre-existing feeds, foreach
-                    _this4.core.feeds()[0].ready(() => {
+                    _this7.core.feeds()[0].ready(() => {
                       resolve();
                     });
                   });
                 }
 
-                _this4.core.use('pointer', timestampView);
+                _this7.core.use('pointer', timestampView);
 
-                _this4.core.ready( /*#__PURE__*/function () {
+                _this7.core.ready( /*#__PURE__*/function () {
                   var _ref3 = _asyncToGenerator(function* (err) {
                     if (err) throw Error('Core not ready'); // perm listener
 
-                    _this4.core.api.pointer.tail(1, msgs => {
+                    _this7.core.api.pointer.tail(1, msgs => {
                       // console.log('tail updated', msgs[0].value)
-                      _this4.latest = msgs[0].value;
+                      _this7.latest = msgs[0].value;
 
-                      _this4.emit('update', msgs[0].value);
+                      _this7.emit('update', msgs[0].value);
                     }); // initial read, if pre-existing tail value
 
 
-                    _this4.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
+                    _this7.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
                       return new Promise((resolve, reject) => {
-                        _this4.core.api.pointer.read({
+                        _this7.core.api.pointer.read({
                           limit: 1,
                           reverse: true
                         }, (err, msgs) => {
                           if (err) console.error(err);
 
                           if (msgs.length > 0) {
-                            _this4.latest = msgs[0].value; // console.log('readLatest: ', this.latest)
+                            _this7.latest = msgs[0].value; // console.log('readLatest: ', this.latest)
 
                             resolve(msgs[0].value);
                           } else {
@@ -69034,11 +69081,11 @@
                         });
                       });
                     });
-                    yield _this4.readLatest();
+                    yield _this7.readLatest();
 
-                    if (_this4.writeEnabled()) {
+                    if (_this7.writeEnabled()) {
                       // writer
-                      _this4.core.writer('kappa-local', (err, feed) => {
+                      _this7.core.writer('kappa-local', (err, feed) => {
                         if (err) reject(err);
 
                         function pub(data) {
@@ -69056,15 +69103,15 @@
                           return objPub;
                         }
 
-                        _this4.publish = pub.bind(feed); // bind feed to this in pub()
+                        _this7.publish = pub.bind(feed); // bind feed to this in pub()
 
                         feed.ready(() => {
-                          _this4.writable = true;
-                          resolve(_this4);
+                          _this7.writable = true;
+                          resolve(_this7);
                         });
                       });
                     } else {
-                      resolve(_this4);
+                      resolve(_this7);
                     }
                   });
 
@@ -69083,10 +69130,10 @@
       }
 
       close() {
-        var _this5 = this;
+        var _this8 = this;
 
         return _asyncToGenerator(function* () {
-          _this5.multi.close(); // closes individual multifeed
+          _this8.multi.close(); // closes individual multifeed
 
         })();
       }
