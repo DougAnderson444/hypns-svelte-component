@@ -68896,10 +68896,13 @@ class HyPNS {
         var swarmOpts = _this2.swarmOpts || {};
 
         if (_this2.opts.staticNoiseKey) {
-          var noiseSeed = _this2.getDeviceSeed();
+          var noiseSeed = _this2.store.inner._deriveSecret(_this2.applicationName, 'replication-keypair');
 
-          var keyPair = _this2.getDeviceMasterKeypair(noiseSeed);
-
+          var keyPair = {
+            publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
+            secretKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
+          };
+          sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.secretKey, noiseSeed);
           Object.assign(swarmOpts, {
             keyPair
           }, DEFAULT_SWARM_OPTS);
@@ -68954,10 +68957,10 @@ class HyPNS {
     return _asyncToGenerator(function* () {
       seed = seed || (yield _this5.getDeviceSeed());
       var keyPair = {
-        publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
-        privateKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
+        publicKey: Buffer.alloc(sodium.crypto_sign_PUBLICKEYBYTES),
+        privateKey: Buffer.alloc(sodium.crypto_sign_SECRETKEYBYTES)
       };
-      sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.privateKey, seed);
+      sodium.crypto_sign_seed_keypair(keyPair.publicKey, keyPair.privateKey, seed);
       return keyPair;
     })();
   }
@@ -68967,7 +68970,7 @@ class HyPNS {
 
     return _asyncToGenerator(function* () {
       origSeed = origSeed || (yield _this6.getDeviceSeed());
-      var newSeed = Buffer.alloc(sodium.crypto_kx_SEEDBYTES);
+      var newSeed = Buffer.alloc(sodium.crypto_sign_SEEDBYTES);
       var ctx = Buffer.alloc(sodium.crypto_kdf_CONTEXTBYTES);
       ctx.write(context);
       sodium.crypto_kdf_derive_from_key(newSeed, subkeyNumber, ctx, origSeed);
