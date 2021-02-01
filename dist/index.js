@@ -68964,9 +68964,9 @@
           seed = seed || (yield _this5.getDeviceSeed());
           var keyPair = {
             publicKey: Buffer.alloc(sodium.crypto_sign_PUBLICKEYBYTES),
-            privateKey: Buffer.alloc(sodium.crypto_sign_SECRETKEYBYTES)
+            secretKey: Buffer.alloc(sodium.crypto_sign_SECRETKEYBYTES)
           };
-          sodium.crypto_sign_seed_keypair(keyPair.publicKey, keyPair.privateKey, seed);
+          sodium.crypto_sign_seed_keypair(keyPair.publicKey, keyPair.secretKey, seed);
           return keyPair;
         })();
       }
