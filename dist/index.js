@@ -68888,6 +68888,12 @@
 
         process.on('SIGINT', closeHandler);
         process.on('SIGTERM', closeHandler);
+      }
+
+      get corestore() {
+        return new Promise(resolve => {
+          this.store.ready().then(resolve(this.store));
+        });
       } // open a new instance on this hypns node
 
 
