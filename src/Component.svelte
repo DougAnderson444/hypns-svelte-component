@@ -10,8 +10,9 @@
 
   export let hypnsNode;
 
-  onMount(() => {
+  onMount(async () => {
     hypnsNode = new HyPNS(opts);
+    await hypnsNode.init();
 
     // Close the HyPNS connection if the browser is closed
     // https://developers.google.com/web/updates/2018/07/page-lifecycle-api#the-unload-event

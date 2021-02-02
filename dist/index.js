@@ -68872,7 +68872,8 @@
         this.swarmOpts = opts.swarmOpts;
         this.opts = {
           staticNoiseKey: opts.staticNoiseKey || false
-        }; // handle shutdown gracefully
+        };
+        this.initialized = false; // handle shutdown gracefully
 
         var closeHandler = /*#__PURE__*/function () {
           var _ref = _asyncToGenerator(function* () {
@@ -68894,80 +68895,86 @@
         return new Promise(resolve => {
           this.store.ready().then(resolve(this.store));
         });
+      }
+
+      init() {
+        var _this2 = this;
+
+        return _asyncToGenerator(function* () {
+          if (_this2.initialized) return;
+          yield _this2.store.ready();
+          var swarmOpts = _this2.swarmOpts || {};
+
+          if (_this2.opts.staticNoiseKey) {
+            // Optionally Set up noiseKey to persist peer identity, just like in mauve's hyper-sdk
+            var noiseSeed = _this2.store.inner._deriveSecret(_this2.applicationName, 'replication-keypair');
+
+            var keyPair = {
+              publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
+              secretKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
+            };
+            sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.secretKey, noiseSeed);
+            Object.assign(swarmOpts, {
+              keyPair
+            }, DEFAULT_SWARM_OPTS);
+          }
+
+          _this2.swarmNetworker = new SwarmNetworker(_this2.store, swarmOpts);
+          _this2.initialized = true;
+        })();
       } // open a new instance on this hypns node
 
 
       open(opts) {
-        var _this2 = this;
+        var _this3 = this;
 
         return _asyncToGenerator(function* () {
-          yield _this2.store.ready();
+          if (!_this3.swarmNetworker) yield _this3.init();
+          if (!_this3.network) _this3.network = new MultifeedNetworker(_this3.swarmNetworker); // return if exists already on this node
 
-          if (!_this2.swarmNetworker) {
-            // Set up noiseKey to persist peer identity, just like in mauve's hyper-sdk
-            var swarmOpts = _this2.swarmOpts || {};
-
-            if (_this2.opts.staticNoiseKey) {
-              var noiseSeed = _this2.store.inner._deriveSecret(_this2.applicationName, 'replication-keypair');
-
-              var keyPair = {
-                publicKey: Buffer.alloc(sodium.crypto_scalarmult_BYTES),
-                secretKey: Buffer.alloc(sodium.crypto_scalarmult_SCALARBYTES)
-              };
-              sodium.crypto_kx_seed_keypair(keyPair.publicKey, keyPair.secretKey, noiseSeed);
-              Object.assign(swarmOpts, {
-                keyPair
-              }, DEFAULT_SWARM_OPTS);
-            }
-
-            _this2.swarmNetworker = new SwarmNetworker(_this2.store, swarmOpts);
-          }
-
-          if (!_this2.network) _this2.network = new MultifeedNetworker(_this2.swarmNetworker); // return if exists already on this node
-
-          if (opts && opts.keypair && opts.keypair.publicKey && _this2.instances.has(opts.keypair.publicKey)) {
-            return _this2.instances.get(opts.keypair.publicKey);
+          if (opts && opts.keypair && opts.keypair.publicKey && _this3.instances.has(opts.keypair.publicKey)) {
+            return _this3.instances.get(opts.keypair.publicKey);
           } // if doesnt exist, return a new instance
 
 
-          var instance = new HyPNSInstance(_objectSpread(_objectSpread({}, opts), _this2));
+          var instance = new HyPNSInstance(_objectSpread(_objectSpread({}, opts), _this3));
 
-          _this2.instances.set(instance.publicKey, instance);
+          _this3.instances.set(instance.publicKey, instance);
 
-          return _this2.instances.get(instance.publicKey);
+          return _this3.instances.get(instance.publicKey);
         })();
       }
 
       close() {
-        var _this3 = this;
+        var _this4 = this;
 
         return _asyncToGenerator(function* () {
           // TODO: Close all instances too?
-          _this3.store.close();
+          _this4.store.close();
 
-          if (_this3.swarmNetworker) yield _this3.swarmNetworker.close(); // Shut down the swarm networker.
+          if (_this4.swarmNetworker) yield _this4.swarmNetworker.close(); // Shut down the swarm networker.
         })();
       }
 
       getDeviceSeed() {
         var _arguments = arguments,
-            _this4 = this;
+            _this5 = this;
 
         return _asyncToGenerator(function* () {
           var nameSpace = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'device-seed';
-          yield _this4.store.ready();
+          yield _this5.store.ready();
 
-          var noiseSeed = _this4.store.inner._deriveSecret(_this4.applicationName, nameSpace);
+          var noiseSeed = _this5.store.inner._deriveSecret(_this5.applicationName, nameSpace);
 
           return noiseSeed;
         })();
       }
 
       getKeypair(seed) {
-        var _this5 = this;
+        var _this6 = this;
 
         return _asyncToGenerator(function* () {
-          seed = seed || (yield _this5.getDeviceSeed());
+          seed = seed || (yield _this6.getDeviceSeed());
           var keyPair = {
             publicKey: Buffer.alloc(sodium.crypto_sign_PUBLICKEYBYTES),
             secretKey: Buffer.alloc(sodium.crypto_sign_SECRETKEYBYTES)
@@ -68978,15 +68985,15 @@
       }
 
       deriveKeypair(context, subkeyNumber, origSeed) {
-        var _this6 = this;
+        var _this7 = this;
 
         return _asyncToGenerator(function* () {
-          origSeed = origSeed || (yield _this6.getDeviceSeed());
+          origSeed = origSeed || (yield _this7.getDeviceSeed());
           var newSeed = Buffer.alloc(sodium.crypto_sign_SEEDBYTES);
           var ctx = Buffer.alloc(sodium.crypto_kdf_CONTEXTBYTES);
           ctx.write(context);
           sodium.crypto_kdf_derive_from_key(newSeed, subkeyNumber, ctx, origSeed);
-          return _this6.getKeypair(newSeed);
+          return _this7.getKeypair(newSeed);
         })();
       }
 
@@ -69012,28 +69019,28 @@
       }
 
       ready() {
-        var _this7 = this;
+        var _this8 = this;
 
         return _asyncToGenerator(function* () {
           return new Promise((resolve, reject) => {
-            var self = _this7;
-            _this7.multi = new Multifeed(_this7.store, {
-              rootKey: _this7._keypair.publicKey,
+            var self = _this8;
+            _this8.multi = new Multifeed(_this8.store, {
+              rootKey: _this8._keypair.publicKey,
               valueEncoding: 'json'
             });
 
-            _this7.network.swarm(_this7.multi);
+            _this8.network.swarm(_this8.multi);
 
-            _this7.multi.ready( /*#__PURE__*/function () {
+            _this8.multi.ready( /*#__PURE__*/function () {
               var _ref2 = _asyncToGenerator(function* (err) {
                 if (err) throw Error('Multifeed not ready');
-                _this7.core = kappa(_this7.store, {
-                  multifeed: _this7.multi
+                _this8.core = kappa(_this8.store, {
+                  multifeed: _this8.multi
                 }); // store not used since we pass in a multifeed
 
                 var timestampView = list(memdb(), (msg, next) => {
                   // only index those msg with valid signature
-                  var valid = msg.value && msg.value.text && msg.value.timestamp && typeof msg.value.timestamp === 'string' && _this7.verify(msg.value.text + ' ' + msg.value.timestamp, msg.value.signature);
+                  var valid = msg.value && msg.value.text && msg.value.timestamp && typeof msg.value.timestamp === 'string' && _this8.verify(msg.value.text + ' ' + msg.value.timestamp, msg.value.signature);
 
                   if (valid) {
                     // sort on the 'timestamp' field
@@ -69048,39 +69055,39 @@
                  * by the kappa view
                  */
 
-                if (_this7.core.feeds().length > 0) {
+                if (_this8.core.feeds().length > 0) {
                   yield new Promise((resolve, reject) => {
                     // TODO: multiple pre-existing feeds, foreach
-                    _this7.core.feeds()[0].ready(() => {
+                    _this8.core.feeds()[0].ready(() => {
                       resolve();
                     });
                   });
                 }
 
-                _this7.core.use('pointer', timestampView);
+                _this8.core.use('pointer', timestampView);
 
-                _this7.core.ready( /*#__PURE__*/function () {
+                _this8.core.ready( /*#__PURE__*/function () {
                   var _ref3 = _asyncToGenerator(function* (err) {
                     if (err) throw Error('Core not ready'); // perm listener
 
-                    _this7.core.api.pointer.tail(1, msgs => {
+                    _this8.core.api.pointer.tail(1, msgs => {
                       // console.log('tail updated', msgs[0].value)
-                      _this7.latest = msgs[0].value;
+                      _this8.latest = msgs[0].value;
 
-                      _this7.emit('update', msgs[0].value);
+                      _this8.emit('update', msgs[0].value);
                     }); // initial read, if pre-existing tail value
 
 
-                    _this7.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
+                    _this8.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
                       return new Promise((resolve, reject) => {
-                        _this7.core.api.pointer.read({
+                        _this8.core.api.pointer.read({
                           limit: 1,
                           reverse: true
                         }, (err, msgs) => {
                           if (err) console.error(err);
 
                           if (msgs.length > 0) {
-                            _this7.latest = msgs[0].value; // console.log('readLatest: ', this.latest)
+                            _this8.latest = msgs[0].value; // console.log('readLatest: ', this.latest)
 
                             resolve(msgs[0].value);
                           } else {
@@ -69090,11 +69097,11 @@
                         });
                       });
                     });
-                    yield _this7.readLatest();
+                    yield _this8.readLatest();
 
-                    if (_this7.writeEnabled()) {
+                    if (_this8.writeEnabled()) {
                       // writer
-                      _this7.core.writer('kappa-local', (err, feed) => {
+                      _this8.core.writer('kappa-local', (err, feed) => {
                         if (err) reject(err);
 
                         function pub(data) {
@@ -69112,15 +69119,15 @@
                           return objPub;
                         }
 
-                        _this7.publish = pub.bind(feed); // bind feed to this in pub()
+                        _this8.publish = pub.bind(feed); // bind feed to this in pub()
 
                         feed.ready(() => {
-                          _this7.writable = true;
-                          resolve(_this7);
+                          _this8.writable = true;
+                          resolve(_this8);
                         });
                       });
                     } else {
-                      resolve(_this7);
+                      resolve(_this8);
                     }
                   });
 
@@ -69139,10 +69146,10 @@
       }
 
       close() {
-        var _this8 = this;
+        var _this9 = this;
 
         return _asyncToGenerator(function* () {
-          _this8.multi.close(); // closes individual multifeed
+          _this9.multi.close(); // closes individual multifeed
 
         })();
       }
