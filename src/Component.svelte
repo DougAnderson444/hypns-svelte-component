@@ -4,14 +4,20 @@
   import { onMount, onDestroy } from "svelte";
 
   // passed down from Parent component
-  export let opts = {
-    persist: false,
-  };
+  export let opts = {}; // default to empty, overwritten if opts are passed in as svelte props
 
   export let hypnsNode;
 
   onMount(async () => {
-    node = new HyPNS(opts);
+    if (!opts) {
+      // add some friendly defaults
+      let wsProxy = ["wss://hyperswarm.mauve.moe"]; // put your websocket proxy server here if you're not running a local hyperswarm-web on :4977
+      opts = {
+        persist: true,
+        swarmOpts: { announceLocalAddress: true, wsProxy },
+      };
+    }
+    const node = new HyPNS(opts);
     await node.init();
     hypnsNode = node;
     // Close the HyPNS connection if the browser is closed
