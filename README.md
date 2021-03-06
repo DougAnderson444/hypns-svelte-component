@@ -1,5 +1,11 @@
 # HyPNS Svelte Component
 
+## Versions
+
+ '>= 2.80 Supports HyPNS v2.0'
+
+'< 2.8.0 Supports HyPNS v1.0'
+
 ## An open/close wrapper for HyPNS
 
 ```js
