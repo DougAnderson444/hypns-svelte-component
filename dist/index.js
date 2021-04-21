@@ -303,8 +303,7 @@
           indexed: function indexed(msgs) {
             for (var i = 0; i < msgs.length; i++) {
               mapFn(msgs[i], function (err, ops) {
-                if (err) return; // console.log({ msgs })
-
+                if (err) return;
                 events.emit('insert', msgs[i]);
               });
             }
@@ -342,14 +341,12 @@
             },
             tail: function tail(core, size, fn) {
               events.on('insert', function (msg) {
-                // console.log('on insert: ',{msg})
                 idx.api.read(core, {
                   limit: size,
                   reverse: true
                 }, function (err, msgs) {
                   var found = msgs.filter(function (m) {
-                    // console.log('on insert filter: ',{msg})
-                    return (msg === null || msg === void 0 ? void 0 : msg.key) === m.key && (msg === null || msg === void 0 ? void 0 : msg.seq) === m.seq;
+                    return msg.key === m.key && msg.seq === m.seq;
                   }).length > 0;
                   if (found) fn(msgs.reverse());
                 });
@@ -29729,53 +29726,36 @@
 
     },{"buffer":53}],183:[function(require,module,exports){
     module.exports={
-      "_args": [
-        [
-          "elliptic@6.5.4",
-          "C:\\Users\\douga\\Documents2\\code\\HyPNS"
-        ]
+      "name": "elliptic",
+      "version": "6.5.4",
+      "description": "EC cryptography",
+      "main": "lib/elliptic.js",
+      "files": [
+        "lib"
       ],
-      "_development": true,
-      "_from": "elliptic@6.5.4",
-      "_id": "elliptic@6.5.4",
-      "_inBundle": false,
-      "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
-      "_location": "/elliptic",
-      "_phantomChildren": {},
-      "_requested": {
-        "type": "version",
-        "registry": true,
-        "raw": "elliptic@6.5.4",
-        "name": "elliptic",
-        "escapedName": "elliptic",
-        "rawSpec": "6.5.4",
-        "saveSpec": null,
-        "fetchSpec": "6.5.4"
+      "scripts": {
+        "lint": "eslint lib test",
+        "lint:fix": "npm run lint -- --fix",
+        "unit": "istanbul test _mocha --reporter=spec test/index.js",
+        "test": "npm run lint && npm run unit",
+        "version": "grunt dist && git add dist/"
       },
-      "_requiredBy": [
-        "/browserify-sign",
-        "/create-ecdh"
+      "repository": {
+        "type": "git",
+        "url": "git@github.com:indutny/elliptic"
+      },
+      "keywords": [
+        "EC",
+        "Elliptic",
+        "curve",
+        "Cryptography"
       ],
-      "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
-      "_spec": "6.5.4",
-      "_where": "C:\\Users\\douga\\Documents2\\code\\HyPNS",
-      "author": {
-        "name": "Fedor Indutny",
-        "email": "fedor@indutny.com"
-      },
+      "author": "Fedor Indutny <fedor@indutny.com>",
+      "license": "MIT",
       "bugs": {
         "url": "https://github.com/indutny/elliptic/issues"
       },
-      "dependencies": {
-        "bn.js": "^4.11.9",
-        "brorand": "^1.1.0",
-        "hash.js": "^1.0.0",
-        "hmac-drbg": "^1.0.1",
-        "inherits": "^2.0.4",
-        "minimalistic-assert": "^1.0.1",
-        "minimalistic-crypto-utils": "^1.0.1"
-      },
-      "description": "EC cryptography",
+      "homepage": "https://github.com/indutny/elliptic",
       "devDependencies": {
         "brfs": "^2.0.2",
         "coveralls": "^3.1.0",
@@ -29791,31 +29771,15 @@
         "istanbul": "^0.4.5",
         "mocha": "^8.0.1"
       },
-      "files": [
-        "lib"
-      ],
-      "homepage": "https://github.com/indutny/elliptic",
-      "keywords": [
-        "EC",
-        "Elliptic",
-        "curve",
-        "Cryptography"
-      ],
-      "license": "MIT",
-      "main": "lib/elliptic.js",
-      "name": "elliptic",
-      "repository": {
-        "type": "git",
-        "url": "git+ssh://git@github.com/indutny/elliptic.git"
-      },
-      "scripts": {
-        "lint": "eslint lib test",
-        "lint:fix": "npm run lint -- --fix",
-        "test": "npm run lint && npm run unit",
-        "unit": "istanbul test _mocha --reporter=spec test/index.js",
-        "version": "grunt dist && git add dist/"
-      },
-      "version": "6.5.4"
+      "dependencies": {
+        "bn.js": "^4.11.9",
+        "brorand": "^1.1.0",
+        "hash.js": "^1.0.0",
+        "hmac-drbg": "^1.0.1",
+        "inherits": "^2.0.4",
+        "minimalistic-assert": "^1.0.1",
+        "minimalistic-crypto-utils": "^1.0.1"
+      }
     };
 
     },{}],184:[function(require,module,exports){
@@ -72306,7 +72270,7 @@
 
     function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-    var path = require('path'); // This is a dirty hack for browserify/rollup to work. 😅
+    var path = require('path'); // This is a dirty hack for browserify to work. 😅
 
 
     if (!path.posix) path.posix = path;
@@ -72562,75 +72526,72 @@
                   });
                 }
 
-                _this8.core.use('pointer', timestampView);
-
-                _this8.core.ready( /*#__PURE__*/function () {
-                  var _ref3 = _asyncToGenerator(function* (err) {
-                    if (err) throw Error('Core not ready'); // perm listener
-
-                    _this8.core.api.pointer.tail(1, msgs => {
-                      // console.log('tail updated', msgs[0].value)
-                      _this8.latest = msgs[0].value.payload;
-
-                      _this8.emit('update', msgs[0].value.payload);
-                    }); // initial read, if pre-existing tail value
+                _this8.core.use('pointer', timestampView); // perm listener
 
 
-                    _this8.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
-                      return new Promise((resolve, reject) => {
-                        _this8.core.api.pointer.read({
-                          limit: 1,
-                          reverse: true
-                        }, (err, msgs) => {
-                          if (err) console.error(err);
+                _this8.core.api.pointer.tail(1, msgs => {
+                  // console.log('tail updated', msgs[0].value)
+                  _this8.latest = msgs[0].value.payload;
 
-                          if (msgs.length > 0) {
-                            _this8.latest = msgs[0].value.payload;
-                            resolve(msgs[0].value.payload);
-                          } else {
-                            // console.log('no tail msgs, resolve false')
-                            resolve(false);
-                          }
-                        });
+                  _this8.emit('update', msgs[0].value.payload);
+                }); // initial read, if pre-existing tail value
+
+
+                _this8.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
+                  var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+                  return new Promise((resolve, reject) => {
+                    _this8.core.api.pointer.read({
+                      limit,
+                      reverse: true
+                    }, (err, msgs) => {
+                      if (err) console.error(err);
+
+                      if (msgs.length > 0) {
+                        _this8.latest = msgs[0].value.payload;
+                        resolve(msgs);
+                      } else {
+                        // console.log('no tail msgs, resolve false')
+                        resolve(false);
+                      }
+                    });
+                  });
+                });
+
+                _this8.core.ready(err => {
+                  if (err) throw Error('Core not ready');
+
+                  _this8.readLatest();
+
+                  if (_this8.writeEnabled()) {
+                    // writer
+                    _this8.core.writer('kappa-local', (err, feed) => {
+                      if (err) reject(err);
+
+                      function pub(payload) {
+                        var timestamp = new Date().toISOString();
+                        var signature = hcrypto.sign(Buffer.from(utils.hashIt(JSON.stringify(payload) + '.' + timestamp), 'utf8'), Buffer.from(self._keypair.secretKey, 'hex') // has to be self._ so that .bind doesn't replace it with feed
+                        );
+                        var objPub = {
+                          payload,
+                          signature: signature.toString('hex'),
+                          timestamp
+                        };
+                        this.append(objPub); // this gets bound to the object's kappa-local feed above
+
+                        return objPub;
+                      }
+
+                      _this8.publish = pub.bind(feed); // bind feed to this in pub()
+
+                      feed.ready(() => {
+                        _this8.writable = true;
+                        resolve(_this8);
                       });
                     });
-                    yield _this8.readLatest();
-
-                    if (_this8.writeEnabled()) {
-                      // writer
-                      _this8.core.writer('kappa-local', (err, feed) => {
-                        if (err) reject(err);
-
-                        function pub(payload) {
-                          var timestamp = new Date().toISOString();
-                          var signature = hcrypto.sign(Buffer.from(utils.hashIt(JSON.stringify(payload) + '.' + timestamp), 'utf8'), Buffer.from(self._keypair.secretKey, 'hex') // has to be self._ so that .bind doesn't replace it with feed
-                          );
-                          var objPub = {
-                            payload,
-                            signature: signature.toString('hex'),
-                            timestamp
-                          };
-                          this.append(objPub); // this gets bound to the object's kappa-local feed above
-
-                          return objPub;
-                        }
-
-                        _this8.publish = pub.bind(feed); // bind feed to this in pub()
-
-                        feed.ready(() => {
-                          _this8.writable = true;
-                          resolve(_this8);
-                        });
-                      });
-                    } else {
-                      resolve(_this8);
-                    }
-                  });
-
-                  return function (_x2) {
-                    return _ref3.apply(this, arguments);
-                  };
-                }());
+                  } else {
+                    resolve(_this8);
+                  }
+                });
               });
 
               return function (_x) {
