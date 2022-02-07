@@ -36,5 +36,12 @@
   });
 
   // this function will be called automatically when mounted svelte component is destroyed
-  onDestroy(async () => await hypnsNode.close());
+  onDestroy(async () => 
+  {
+    try {
+        await hypnsNode.close()
+    } catch (error) {
+        console.log("Closed undefined Hypns component. ")
+    }
+  });
 </script>
