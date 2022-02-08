@@ -1,6 +1,6 @@
 {
     "name": "hypns-svelte-component",
-    "version": "2.9.2",
+    "version": "2.9.3",
     "module": "dist/index.mjs",
     "main": "dist/index.js",
     "files": [
@@ -12,7 +12,7 @@
         "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "hypns": "^2.1.1"
+        "hypns": "github:douganderson444/hypns"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^17.0.0",

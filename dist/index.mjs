@@ -72137,11 +72137,12 @@ class HyPNS {
 
     return _asyncToGenerator(function* () {
       if (!_this3.swarmNetworker) yield _this3.init();
-      if (!_this3.network) _this3.network = new MultifeedNetworker(_this3.swarmNetworker); // return if exists already on this node
+      if (!_this3.network) _this3.network = new MultifeedNetworker(_this3.swarmNetworker); // return if exists already on this node, and is not a writer (with a wallet opt)
 
-      if (opts && opts.keypair && opts.keypair.publicKey && _this3.instances.has(opts.keypair.publicKey)) {
-        return _this3.instances.get(opts.keypair.publicKey);
-      } // if doesnt exist, return a new instance
+      if (opts && opts.keypair && opts.keypair.publicKey && _this3.instances.has(opts.keypair.publicKey) && !opts.wallet // not opening a writer
+      ) {
+          return _this3.instances.get(opts.keypair.publicKey);
+        } // if doesnt exist, return a new instance
 
 
       var instance = new HyPNSInstance(_objectSpread(_objectSpread({}, opts), _this3));
@@ -72297,6 +72298,10 @@ class HyPNSInstance extends EventEmitter {
               _this8.readLatest = /*#__PURE__*/_asyncToGenerator(function* () {
                 var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
                 return new Promise((resolve, reject) => {
+                  var _this8$core, _this8$core$api;
+
+                  if (!((_this8$core = _this8.core) !== null && _this8$core !== void 0 && (_this8$core$api = _this8$core.api) !== null && _this8$core$api !== void 0 && _this8$core$api.pointer)) resolve(false);
+
                   _this8.core.api.pointer.read({
                     limit,
                     reverse: true
@@ -72410,14 +72415,10 @@ class HyPNSInstance extends EventEmitter {
       var signature; // TODO: assert proper wallet features, publicKey and signing ability
 
       if (_this10.wallet) {
-        console.log("checking wallet");
         signature = yield _this10.wallet.ed25519.sign(message); // Uint8array
 
         var maybeVerified = yield _this10.wallet.ed25519.verify(Buffer.from(_this10._keypair.publicKey, "hex"), // hex to Buffer
         message, Buffer.from(signature));
-        console.log({
-          maybeVerified
-        });
         return maybeVerified;
       } else {
         // legacy keypair use
