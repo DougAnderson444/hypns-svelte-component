@@ -72421,11 +72421,8 @@
           var signature; // TODO: assert proper wallet features, publicKey and signing ability
 
           if (_this10.wallet) {
-            signature = yield _this10.wallet.ed25519.sign(message); // Uint8array
-
-            var maybeVerified = yield _this10.wallet.ed25519.verify(Buffer.from(_this10._keypair.publicKey, "hex"), // hex to Buffer
-            message, Buffer.from(signature));
-            return maybeVerified;
+            var pk = yield _this10.wallet.getPublicKey();
+            return !!pk;
           } else {
             // legacy keypair use
             if (!_this10._keypair.secretKey || Buffer.byteLength(_this10._keypair.secretKey, "hex") !== sodium.crypto_sign_SECRETKEYBYTES) {
