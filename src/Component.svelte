@@ -1,5 +1,6 @@
 <script>
   import HyPNS from "hypns"; // uses the browser field in package.json
+	import adapter from 'webrtc-adapter';
 
   import { onMount, onDestroy } from "svelte";
 
