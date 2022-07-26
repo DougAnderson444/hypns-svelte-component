@@ -1,6 +1,6 @@
 {
     "name": "hypns-svelte-component",
-    "version": "2.9.4",
+    "version": "2.9.5",
     "module": "dist/index.mjs",
     "main": "dist/index.js",
     "files": [
@@ -12,7 +12,8 @@
         "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "hypns": "^2.1.3"
+        "hypns": "^2.1.3",
+        "webrtc-adapter": "^8.1.1"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^17.0.0",
