@@ -1,36 +1,38 @@
-# HyPNS Svelte Component
+# create-svelte
 
-## Versions
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-'>= 2.80 Supports HyPNS v2.0'
+## Creating a project
 
-'< 2.8.0 Supports HyPNS v1.0'
+If you're seeing this, you've probably already done this step. Congrats!
 
-## An open/close wrapper for HyPNS
+```bash
+# create a new project in the current directory
+npm create svelte@latest
 
-```js
-npm i hypns-svelte-component
+# create a new project in my-app
+npm create svelte@latest my-app
 ```
 
-[HyPNS](https://github.com/DougAnderson444/HyPNS) uses [@corestore/networker](https://www.npmjs.com/package/@corestore/networker) which has networking that needs to opened and closed intelligently.
+## Developing
 
-When using HyPNS, you need to remember to
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```js
-await HyPNS.close() // remembering things sucks, there's a better way! Let's use the computer
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
-Instead of pushing this obligation out into userland, this handy little Svelte component wraps HyPNS with listeners that activate if:
+## Building
 
--   The window is [terminated](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#state-terminated) using [`"pagehide"`](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#the-unload-event), or
--   The svelte component is destroyed, using [`"onDestroy"`](https://svelte.dev/docs#onDestroy)
+To create a production version of your app:
 
-## Notes
+```bash
+npm run build
+```
 
-The "svelte" entry in package.json needs to be empty for this to work. Otherwise things break...
+You can preview the production build with `npm run preview`.
 
-> TODO: Config the rollup to bundle alright even if "svelte" field is included.
-
-## Development
-
-Remember to build before git push.
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

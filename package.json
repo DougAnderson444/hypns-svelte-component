@@ -1,37 +1,27 @@
 {
-    "name": "hypns-svelte-component",
-    "version": "2.9.5",
-    "module": "dist/index.mjs",
-    "main": "dist/index.js",
-    "files": [
-        "src",
-        "dist"
-    ],
-    "scripts": {
-        "build": "rollup -c",
-        "prepublishOnly": "npm run build"
-    },
-    "dependencies": {
-        "hypns": "^2.1.3",
-        "webrtc-adapter": "^8.1.1"
-    },
-    "devDependencies": {
-        "@rollup/plugin-commonjs": "^17.0.0",
-        "@rollup/plugin-json": "^4.1.0",
-        "@rollup/plugin-node-resolve": "^9.0.0",
-        "rollup": "^2.0.0",
-        "rollup-plugin-node-builtins": "^2.1.2",
-        "rollup-plugin-node-polyfills": "^0.2.1",
-        "rollup-plugin-svelte": "^6.0.0",
-        "svelte": "^3.49.0"
-    },
-    "keywords": [
-        "svelte"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/DougAnderson444/HyPNS-Svelte-Component.git"
-    },
-    "license": "MIT",
-    "author": "Doug S Anderson"
+	"name": "@douganderson444/hypns-svelte-component",
+	"version": "3.0.0",
+	"module": "index.js",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"package": "svelte-kit package",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync",
+		"lint": "prettier --check --plugin-search-dir=. .",
+		"format": "prettier --write --plugin-search-dir=. ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"prettier": "^2.6.2",
+		"prettier-plugin-svelte": "^2.7.0",
+		"svelte": "^3.49.0",
+		"vite": "^3.0.0"
+	},
+	"type": "module",
+	"dependencies": {
+		"hypns": "^2.1.4",
+		"webrtc-adapter": "^8.1.1"
+	}
 }

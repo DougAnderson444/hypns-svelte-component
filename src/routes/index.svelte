@@ -1,25 +1,22 @@
 <script>
-	import { onMount, onDestroy } from "svelte";
-	import HypnsComponent from "../../";
+	import { onMount } from 'svelte';
+	import HypnsComponent from '@douganderson444/hypns-svelte-component-kit';
 
-	export let name;
+	export let name = 'Douglas';
 	export let hypnsNode;
 
 	// You can configure the node to meet your networking needs
-	let wsProxy = [
-		"wss://super.peerpiper.io:49777",
-		"wss://hyperswarm.mauve.moe",
-	];
+	let wsProxy = ['wss://super.peerpiper.io:49777', 'wss://hyperswarm.mauve.moe'];
 	let opts = {
 		persist: true,
-		swarmOpts: { announceLocalAddress: true, wsProxy },
+		swarmOpts: { announceLocalAddress: true, wsProxy }
 	};
 
-	let recent = "";
-	let publicKey = "";
+	let recent = '';
+	let publicKey = '';
 	let contacts = [];
-	let newFaveColor = "";
-	let lastEntry = "";
+	let newFaveColor = '';
+	let lastEntry = '';
 	let myInstance;
 
 	onMount(async () => {});
@@ -44,27 +41,27 @@
 	};
 
 	function setupInstance(nameInstance) {
-		console.log("Setting up", nameInstance.publicKey);
+		console.log('Setting up', nameInstance.publicKey);
 		const showLatest = (val) => {
 			if (nameInstance.latest && nameInstance.latest.text) {
 				lastEntry = nameInstance.latest.text;
-				console.log("showLatest ", nameInstance.latest.text);
-				recent += `<br/>${nameInstance.publicKey}: ${nameInstance.latest.text}`;
+				console.log('showLatest ', nameInstance.latest.text);
+				recent += `<br/>${nameInstance.publicKey.toString('hex')}: ${nameInstance.latest.text}`;
 			}
 		};
 
 		contacts = [...contacts, nameInstance];
-		console.log("Showing latest ", nameInstance.latest);
+		console.log('Showing latest ', nameInstance.latest);
 		showLatest(nameInstance.latest);
-		nameInstance.on("update", showLatest);
+		nameInstance.on('update', showLatest);
 	}
 
 	const addPublicKey = async () => {
-		console.log("addPublicKey", publicKey);
+		console.log('addPublicKey', publicKey);
 		try {
 			const newFriend = await getInstance(publicKey);
 			setupInstance(newFriend);
-			publicKey = "";
+			publicKey = '';
 		} catch (error) {
 			console.error(error);
 		}
@@ -73,7 +70,7 @@
 	function handleUpdate() {
 		myInstance.publish({ text: newFaveColor });
 		lastEntry = newFaveColor;
-		newFaveColor = "";
+		newFaveColor = '';
 	}
 </script>
 
@@ -110,7 +107,7 @@
 			{#if contacts && contacts.length > 0}
 				<ul>
 					{#each contacts as contact}
-						<li>{contact.publicKey}</li>
+						<li>{contact.publicKey.toString('hex')}</li>
 					{/each}
 				</ul>
 			{/if}
