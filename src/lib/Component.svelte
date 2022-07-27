@@ -1,6 +1,6 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import adapter from 'webrtc-adapter';
+	import * as adapter from 'webrtc-adapter';
 
 	export let opts = {}; // default to empty, overwritten if opts are passed in as svelte props
 	export let hypnsNode;
