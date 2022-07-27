@@ -1,9 +1,8 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-	import * as adapter from 'webrtc-adapter';
 
 	export let opts = {}; // default to empty, overwritten if opts are passed in as svelte props
-	export let hypnsNode;
+	export let hypnsNode = null;
 
 	let HyPNS;
 
@@ -36,6 +35,13 @@
 			},
 			{ capture: true }
 		);
+
+		try {
+			const mod = await import('webrtc-adapter');
+			const adapter = mod.default;
+		} catch (error) {
+			console.warn('WebRTC adapter not found.');
+		}
 	});
 
 	// this function will be called automatically when mounted svelte component is destroyed

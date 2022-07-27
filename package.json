@@ -1,6 +1,8 @@
 {
 	"name": "@douganderson444/hypns-svelte-component",
 	"version": "3.0.0",
+	"svelte": "index.js",
+	"main": "index.js",
 	"module": "index.js",
 	"scripts": {
 		"dev": "vite dev",
