@@ -13,6 +13,16 @@ const config = {
 		fs: {
 			strict: false
 		}
+	},
+	// workaround for common-js issues of default export
+	// https://vitejs.dev/guide/dep-pre-bundling.html#monorepos-and-linked-dependencies
+	build: {
+		commonjsOptions: {
+			include: [/immortal-db/, /node_modules/]
+		}
+	},
+	optimizeDeps: {
+		include: ['immortal-db']
 	}
 };
 
