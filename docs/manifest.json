@@ -1,0 +1,95 @@
+{
+  ".svelte-kit/runtime/client/start.js": {
+    "file": "_app/immutable/start-2137a76b.js",
+    "src": ".svelte-kit/runtime/client/start.js",
+    "isEntry": true,
+    "imports": [
+      "_index-fe5e0b48.js",
+      "_preload-helper-cdbd96e6.js"
+    ],
+    "dynamicImports": [
+      ".svelte-kit/runtime/components/layout.svelte",
+      ".svelte-kit/runtime/components/error.svelte",
+      "src/routes/index.svelte"
+    ]
+  },
+  ".svelte-kit/runtime/components/layout.svelte": {
+    "file": "_app/immutable/layout.svelte-9401ea0b.js",
+    "src": ".svelte-kit/runtime/components/layout.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-fe5e0b48.js"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "_app/immutable/error.svelte-6d3b63bf.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-fe5e0b48.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "_app/immutable/pages/index.svelte-b708a182.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-cdbd96e6.js",
+      "_index-fe5e0b48.js"
+    ],
+    "dynamicImports": [
+      "_hypns-bundle-2151c33c.js",
+      "node_modules/webrtc-adapter/src/js/adapter_core.js",
+      "node_modules/@peerpiper/web3-wallet-connector/index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/index-d7a1264f.css"
+    ]
+  },
+  "_index-fe5e0b48.js": {
+    "file": "_app/immutable/chunks/index-fe5e0b48.js"
+  },
+  "_preload-helper-cdbd96e6.js": {
+    "file": "_app/immutable/chunks/preload-helper-cdbd96e6.js"
+  },
+  "node_modules/@peerpiper/web3-wallet-connector/index.js": {
+    "file": "_app/immutable/chunks/index-4b4f06e9.js",
+    "src": "node_modules/@peerpiper/web3-wallet-connector/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-fe5e0b48.js",
+      "_preload-helper-cdbd96e6.js"
+    ],
+    "dynamicImports": [
+      "node_modules/immortal-db/src/index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/index-d9ef241e.css"
+    ]
+  },
+  "_hypns-bundle-2151c33c.js": {
+    "file": "_app/immutable/chunks/hypns-bundle-2151c33c.js",
+    "isDynamicEntry": true
+  },
+  "node_modules/webrtc-adapter/src/js/adapter_core.js": {
+    "file": "_app/immutable/chunks/adapter_core-919699b9.js",
+    "src": "node_modules/webrtc-adapter/src/js/adapter_core.js",
+    "isDynamicEntry": true
+  },
+  "node_modules/immortal-db/src/index.js": {
+    "file": "_app/immutable/chunks/index-f3824ee7.js",
+    "src": "node_modules/immortal-db/src/index.js",
+    "isDynamicEntry": true
+  },
+  "node_modules/@peerpiper/web3-wallet-connector\\index.css": {
+    "file": "_app/immutable/assets/index-d9ef241e.css",
+    "src": "node_modules/@peerpiper/web3-wallet-connector\\index.css"
+  },
+  "src/routes\\index.css": {
+    "file": "_app/immutable/assets/index-d7a1264f.css",
+    "src": "src/routes\\index.css"
+  }
+}
