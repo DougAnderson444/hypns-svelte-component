@@ -6,7 +6,7 @@ const config = {
 	plugins: [sveltekit()],
 	resolve: {
 		alias: {
-			'@douganderson444/hypns-svelte-component-kit': path.resolve('src/lib')
+			'@douganderson444/hypns-svelte-component': path.resolve('src/lib')
 		}
 	},
 	server: {

@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import HypnsComponent from '@douganderson444/hypns-svelte-component-kit';
+	import HypnsComponent from '@douganderson444/hypns-svelte-component';
 
 	export let name = 'Douglas';
 	export let hypnsNode;
