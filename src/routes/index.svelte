@@ -4,9 +4,13 @@
 
 	export let name = 'Douglas';
 	export let hypnsNode;
+	export let wallet = null; // possible the user has their own wallet?
 
 	// You can configure the node to meet your networking needs
-	let wsProxy = ['wss://super.peerpiper.io:49777', 'wss://hyperswarm.mauve.moe'];
+	let wsProxy = [
+		// 'wss://super.peerpiper.io:49777',
+		'wss://hyperswarm.mauve.moe'
+	];
 	let opts = {
 		persist: true,
 		swarmOpts: { announceLocalAddress: true, wsProxy }
@@ -19,12 +23,20 @@
 	let lastEntry = '';
 	let myInstance;
 
-	onMount(async () => {});
+	//props
+	let Web3WalletMenu;
 
-	$: !!hypnsNode ? init() : null;
+	onMount(async () => {
+		if (!wallet) {
+			// @ts-ignore
+			({ Web3WalletMenu } = await import('@peerpiper/web3-wallet-connector'));
+		}
+	});
+
+	$: !!hypnsNode && wallet ? init() : null;
 
 	const init = async () => {
-		const instance = await hypnsNode.open(); // makes a new keypair for you
+		const instance = await hypnsNode.open({ wallet }); // makes a new keypair for you if no wallet
 		await instance.ready();
 		myInstance = instance;
 		setupInstance(myInstance);
@@ -41,7 +53,7 @@
 	};
 
 	function setupInstance(nameInstance) {
-		console.log('Setting up', nameInstance.publicKey);
+		console.log('Setting up', nameInstance.publicKey.toString('hex'));
 		const showLatest = (val) => {
 			if (nameInstance.latest && nameInstance.latest.text) {
 				lastEntry = nameInstance.latest.text;
@@ -73,6 +85,11 @@
 		newFaveColor = '';
 	}
 </script>
+
+<!-- Use a wallet to manage our Keypair -->
+{#if Web3WalletMenu}
+	<svelte:component this={Web3WalletMenu} bind:wallet />
+{/if}
 
 <main>
 	<h1>Hello {name}!</h1>
@@ -107,7 +124,9 @@
 			{#if contacts && contacts.length > 0}
 				<ul>
 					{#each contacts as contact}
-						<li>{contact.publicKey.toString('hex')}</li>
+						<li style="text-transform:uppercase; list-style: none;">
+							{contact.publicKey.toString('hex')}
+						</li>
 					{/each}
 				</ul>
 			{/if}

@@ -23,6 +23,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@peerpiper/web3-wallet-connector": "^0.1.0",
 		"hypns": "^2.1.4",
 		"webrtc-adapter": "^8.1.1"
 	}

@@ -1,38 +1,40 @@
-# create-svelte
+# HyPNS Svelte Component
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+A Svelte wrapper for [HyPNS](https://github.com/DougAnderson444/HyPNS)
 
-## Creating a project
+## Install
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+```js
+npm i hypns-svelte-component
 ```
 
-## Developing
+## Rationale
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+[HyPNS](https://github.com/DougAnderson444/HyPNS) uses [@corestore/networker](https://www.npmjs.com/package/@corestore/networker) which has networking that should be opened and closed intelligently.
 
-```bash
+Notably, when using HyPNS, you should remember to
+
+```js
+await HyPNS.close(); // remembering things sucks, there's a better way! Let's use the computer
+```
+
+Instead of pushing this obligation out into userland, this handy little Svelte component wraps HyPNS with listeners that activate if:
+
+- The window is [terminated](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#state-terminated) using [`"pagehide"`](https://developers.google.com/web/updates/2018/07/page-lifecycle-api#the-unload-event), or
+- The svelte component is destroyed, using [`"onDestroy"`](https://svelte.dev/docs#onDestroy)
+
+## Demo
+
+This repo comes with a demo that runs using
+
+```
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+The demo shows how to use a keypair, provided by the PeerPiper web wallet, to sign posts to HYPNS.
 
-To create a production version of your app:
+## Versions
 
-```bash
-npm run build
-```
+'>= 2.80 Supports HyPNS v2.0'
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+'< 2.8.0 Supports HyPNS v1.0'
