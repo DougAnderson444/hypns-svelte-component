@@ -7,8 +7,11 @@
 	let HyPNS;
 
 	onMount(async () => {
-		HyPNS = (await import('hypns')).default; // uses the browser field in package.json
-		// const adapter = (await import('webrtc-adapter')).default; // uses the browser field in package.json
+		HyPNS = await import('hypns'); // uses the browser field in package.json
+
+		if (HyPNS.default) HyPNS = HyPNS.default; // so we can dev with vite dev
+
+		console.log({ HyPNS });
 
 		if (!opts) {
 			// add some friendly defaults
