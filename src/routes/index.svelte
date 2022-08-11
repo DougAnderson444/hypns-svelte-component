@@ -3,7 +3,7 @@
 	import HypnsComponent from '@douganderson444/hypns-svelte-component';
 
 	export let name = 'Douglas';
-	export let hypnsNode;
+	export let hypnsNode = null;
 	export let wallet = null; // possible the user has their own wallet?
 
 	// You can configure the node to meet your networking needs
@@ -63,8 +63,6 @@
 		};
 
 		contacts = [...contacts, nameInstance];
-		console.log('Showing latest ', nameInstance.latest);
-		showLatest(nameInstance.latest);
 		nameInstance.on('update', showLatest);
 	}
 
