@@ -11,8 +11,6 @@
 
 		if (HyPNS.default) HyPNS = HyPNS.default; // so we can dev with vite dev
 
-		console.log({ HyPNS });
-
 		if (!opts) {
 			// add some friendly defaults
 			let wsProxy = ['wss://hyperswarm.mauve.moe']; // put your websocket proxy server here if you're not running a local hyperswarm-web on :4977
